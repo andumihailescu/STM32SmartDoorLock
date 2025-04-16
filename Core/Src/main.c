@@ -50,6 +50,9 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 PN532 pn532;
+uint8_t buff[255];
+uint8_t uid[MIFARE_UID_MAX_LENGTH];
+int32_t uid_len = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,10 +77,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t buff[255];
-  uint8_t uid[MIFARE_UID_MAX_LENGTH];
-  uint32_t pn532_error = PN532_ERROR_NONE;
-  int32_t uid_len = 0;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -101,21 +101,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  printf("Hello!\r\n");
-  PN532 pn532;
-  // PN532_SPI_Init(&pn532);
-  PN532_I2C_Init(&pn532);
-  PN532_GetFirmwareVersion(&pn532, buff);
-  if (PN532_GetFirmwareVersion(&pn532, buff) == PN532_STATUS_OK)
-  {
-	printf("Found PN532 with firmware version: %d.%d\r\n", buff[1], buff[2]);
-  }
-  else
-  {
-	return -1;
-  }
-  PN532_SamConfiguration(&pn532);
-  printf("Waiting for RFID/NFC card...\r\n");
+
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -139,6 +125,14 @@ int main(void)
 
   /* -- Sample board code to send message over COM1 port ---- */
   printf("Welcome to STM32 world!\r\n");
+  PN532_I2C_Init(&pn532);
+  PN532_GetFirmwareVersion(&pn532, buff);
+  if (PN532_GetFirmwareVersion(&pn532, buff) == PN532_STATUS_OK)
+  {
+  	printf("Found PN532 with firmware version: %d.%d\r\n", buff[1], buff[2]);
+  }
+  PN532_SamConfiguration(&pn532);
+  printf("Waiting for RFID/NFC card...\r\n");
 
   /* -- Sample board code to switch on leds ---- */
   BSP_LED_On(LED_GREEN);
@@ -174,7 +168,6 @@ int main(void)
 		printf("%02x ", uid[i]);
 	  }
 	  printf("\r\n");
-	  break;
 	}
   }
   /* USER CODE END 3 */
