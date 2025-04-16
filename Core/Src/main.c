@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "pn532_stm32f1.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,10 +49,7 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-PN532 pn532;
-uint8_t buff[255];
-uint8_t uid[MIFARE_UID_MAX_LENGTH];
-int32_t uid_len = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -124,16 +121,8 @@ int main(void)
   /* USER CODE BEGIN BSP */
 
   /* -- Sample board code to send message over COM1 port ---- */
-  printf("Welcome to STM32 world!\r\n");
-  PN532_I2C_Init(&pn532);
-  PN532_GetFirmwareVersion(&pn532, buff);
-  if (PN532_GetFirmwareVersion(&pn532, buff) == PN532_STATUS_OK)
-  {
-  	printf("Found PN532 with firmware version: %d.%d\r\n", buff[1], buff[2]);
-  }
-  PN532_SamConfiguration(&pn532);
-  printf("Waiting for RFID/NFC card...\r\n");
 
+  Application_Init();
   /* -- Sample board code to switch on leds ---- */
   BSP_LED_On(LED_GREEN);
 
@@ -153,22 +142,13 @@ int main(void)
       BSP_LED_Toggle(LED_GREEN);
       printf("Button pressed. Led toggled!\r\n");
       /* ..... Perform your action ..... */
+      ReadNFCTag();
     }
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // Check if a card is available to read
-	uid_len = PN532_ReadPassiveTarget(&pn532, uid, PN532_MIFARE_ISO14443A, 1000);
-	if (uid_len == PN532_STATUS_ERROR) {
-	  printf(".");
-	} else {
-	  printf("Found card with UID: ");
-	  for (uint8_t i = 0; i < uid_len; i++) {
-		printf("%02x ", uid[i]);
-	  }
-	  printf("\r\n");
-	}
+
   }
   /* USER CODE END 3 */
 }

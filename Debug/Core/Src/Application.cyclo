@@ -1,0 +1,2 @@
+../Core/Src/Application.c:9:6:Application_Init	2
+../Core/Src/Application.c:22:6:ReadNFCTag	3

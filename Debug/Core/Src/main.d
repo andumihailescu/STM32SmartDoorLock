@@ -31,9 +31,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_uart_ex.h \
  ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo.h \
  ../Core/Inc/stm32c0xx_nucleo_conf.h \
- ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo_errno.h \
- D:/School/SmartDoorLock/Drivers/PN532/pn532_stm32f1.h \
- D:/School/SmartDoorLock/Drivers/PN532/pn532.h
+ ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo_errno.h
 ../Core/Inc/main.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_ll_system.h:
@@ -68,5 +66,3 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo.h:
 ../Core/Inc/stm32c0xx_nucleo_conf.h:
 ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo_errno.h:
-D:/School/SmartDoorLock/Drivers/PN532/pn532_stm32f1.h:
-D:/School/SmartDoorLock/Drivers/PN532/pn532.h:
