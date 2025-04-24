@@ -24,7 +24,6 @@ C_DEPS :=
 SUBDIRS := \
 Core/Src \
 Core/Startup \
-Drivers/BSP/STM32C0xx_Nucleo \
 Drivers/PN532 \
 Drivers/STM32C0xx_HAL_Driver/Src \
 

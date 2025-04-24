@@ -1,2 +1,2 @@
 ../Core/Src/Application.c:9:6:Application_Init	8	static
-../Core/Src/Application.c:22:6:ReadNFCTag	16	static
+../Core/Src/Application.c:21:7:ReadNFCTag	32	static

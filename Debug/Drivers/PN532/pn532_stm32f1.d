@@ -29,10 +29,8 @@ Drivers/PN532/pn532_stm32f1.o: ../Drivers/PN532/pn532_stm32f1.c \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_pwr_ex.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_uart.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_uart_ex.h \
- ../Core/Inc/main.h ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo.h \
- ../Core/Inc/stm32c0xx_nucleo_conf.h \
- ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo_errno.h \
- ../Drivers/PN532/pn532_stm32f1.h ../Drivers/PN532/pn532.h
+ ../Core/Inc/main.h ../Drivers/PN532/pn532_stm32f1.h \
+ ../Drivers/PN532/pn532.h
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_ll_system.h:
 ../Drivers/CMSIS/Device/ST/STM32C0xx/Include/stm32c0xx.h:
@@ -64,8 +62,5 @@ Drivers/PN532/pn532_stm32f1.o: ../Drivers/PN532/pn532_stm32f1.c \
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_uart.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_uart_ex.h:
 ../Core/Inc/main.h:
-../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo.h:
-../Core/Inc/stm32c0xx_nucleo_conf.h:
-../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo_errno.h:
 ../Drivers/PN532/pn532_stm32f1.h:
 ../Drivers/PN532/pn532.h:

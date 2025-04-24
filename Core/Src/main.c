@@ -1,12 +1,14 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
+  * @file    GPIO/GPIO_EXTI/Src/main.c
+  * @author  MCD Application Team
+  * @brief   This example describes how to configure and use GPIOs through
+  *          the STM32C0xx HAL API.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -41,15 +43,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-COM_InitTypeDef BspCOMInit;
-__IO uint32_t BspButtonState = BUTTON_RELEASED;
-
 I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,7 +56,8 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+/* Private function prototypes -----------------------------------------------*/
+static void EXTI4_15_IRQHandler_Config(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -74,7 +73,15 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  /* STM32C0xx HAL library initialization:
+       - Configure the Flash prefetch
+       - Systick timer is configured by default as source of time base, but user 
+         can eventually implement his proper time base source (a general purpose 
+         timer for example or other time source), keeping in mind that Time base 
+         duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and 
+         handled in milliseconds basis.
+       - Low Level Initialization
+     */
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -98,53 +105,14 @@ int main(void)
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Initialize leds */
-  BSP_LED_Init(LED_GREEN);
-
-  /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
-  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
-
-  /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
-  BspCOMInit.BaudRate   = 115200;
-  BspCOMInit.WordLength = COM_WORDLENGTH_8B;
-  BspCOMInit.StopBits   = COM_STOPBITS_1;
-  BspCOMInit.Parity     = COM_PARITY_NONE;
-  BspCOMInit.HwFlowCtl  = COM_HWCONTROL_NONE;
-  if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE)
-  {
-    Error_Handler();
-  }
-
-  /* USER CODE BEGIN BSP */
-
-  /* -- Sample board code to send message over COM1 port ---- */
-
+  EXTI4_15_IRQHandler_Config();
   Application_Init();
-  /* -- Sample board code to switch on leds ---- */
-  BSP_LED_On(LED_GREEN);
-
-  /* USER CODE END BSP */
+  /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-    /* -- Sample board code for User push-button in interrupt mode ---- */
-    if (BspButtonState == BUTTON_PRESSED)
-    {
-      /* Update button state */
-      BspButtonState = BUTTON_RELEASED;
-      /* -- Sample board code to toggle leds ---- */
-      BSP_LED_Toggle(LED_GREEN);
-      printf("Button pressed. Led toggled!\r\n");
-      /* ..... Perform your action ..... */
-      ReadNFCTag();
-    }
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -167,8 +135,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -178,7 +148,7 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV1;
@@ -292,14 +262,33 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LED4_Pin */
+  GPIO_InitStruct.Pin = LED4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED4_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -307,21 +296,54 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
 /**
-  * @brief  BSP Push Button callback
-  * @param  Button Specifies the pressed button
+  * @brief  Configures EXTI line 13 (connected to PC.13 pin) in interrupt mode
+  * @param  None
   * @retval None
   */
-void BSP_PB_Callback(Button_TypeDef Button)
+static void EXTI4_15_IRQHandler_Config(void)
 {
-  if (Button == BUTTON_USER)
-  {
-    BspButtonState = BUTTON_PRESSED;
-  }
+  GPIO_InitTypeDef   GPIO_InitStructure;
+
+
+  /* Enable GPIOC clock */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+
+  /* Configure PC.13 pin as input floating */
+  GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
+
+
+  GPIO_InitStructure.Pull = GPIO_PULLUP;
+  GPIO_InitStructure.Pin = GPIO_PIN_13;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+
+  /* Enable and set line 13 Interrupt to the lowest priority */
+  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 }
+
+
+/**
+  * @brief EXTI line detection callbacks
+  * @param GPIO_Pin: Specifies the pins connected EXTI line
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == GPIO_PIN_13)
+    {
+        // Get the message from ReadNFCTag()
+        char* msg = ReadNFCTag();
+
+        // Calculate the length of the message (null-terminated string)
+        uint16_t msg_len = strlen(msg);
+
+        // Transmit the message over UART2
+        HAL_UART_Transmit(&huart1, (uint8_t*)msg, msg_len, HAL_MAX_DELAY);
+    }
+}
+/* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
@@ -331,7 +353,6 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
   while (1)
   {
   }
@@ -350,7 +371,12 @@ void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+
+  /* Infinite loop */
+  while (1)
+  {
+  }
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

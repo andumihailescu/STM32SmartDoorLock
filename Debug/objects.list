@@ -6,7 +6,6 @@
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32c0xx.o"
 "./Core/Startup/startup_stm32c031c6tx.o"
-"./Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo.o"
 "./Drivers/PN532/pn532.o"
 "./Drivers/PN532/pn532_stm32f1.o"
 "./Drivers/STM32C0xx_HAL_Driver/Src/stm32c0xx_hal.o"
@@ -27,5 +26,3 @@
 "./Drivers/STM32C0xx_HAL_Driver/Src/stm32c0xx_hal_tim_ex.o"
 "./Drivers/STM32C0xx_HAL_Driver/Src/stm32c0xx_hal_uart.o"
 "./Drivers/STM32C0xx_HAL_Driver/Src/stm32c0xx_hal_uart_ex.o"
-"./Drivers/STM32C0xx_HAL_Driver/Src/stm32c0xx_hal_usart.o"
-"./Drivers/STM32C0xx_HAL_Driver/Src/stm32c0xx_hal_usart_ex.o"
